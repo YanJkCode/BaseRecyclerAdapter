@@ -149,6 +149,22 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
      *
      * @param data
      */
+    public BaseRecyclerAdapter setNewData(T data) {
+        if (data != null) {
+            if (mData.size() > 0) {
+                mData.clear();
+            }
+            mData.add(data);
+            notifyDataSetChanged();
+        }
+        return this;
+    }
+
+    /**
+     * 设置数据 会覆盖原有数据
+     *
+     * @param data
+     */
     public BaseRecyclerAdapter setNewData(List<T> data) {
         if (isArrNoData(data)) {
             if (mData.size() > 0) {
