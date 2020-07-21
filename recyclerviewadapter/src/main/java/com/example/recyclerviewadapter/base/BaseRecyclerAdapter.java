@@ -230,7 +230,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<BaseRe
     }
 
     /**
-     * 添加数据 如果本来就没有数据则会直接覆盖  如果有数据则添加到后面
+     * 添加1条数据 如果本来就没有数据则会直接覆盖  如果有数据则添加到后面
      *
      * @param data
      */

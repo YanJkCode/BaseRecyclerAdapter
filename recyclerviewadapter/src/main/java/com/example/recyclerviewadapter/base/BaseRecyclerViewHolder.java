@@ -405,6 +405,30 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
+    /**
+     * 设置条目本身的点击事件
+     */
+    public BaseRecyclerViewHolder addItemOnClickListener() {
+        childClickViewIds.add(itemView.getId());
+        if (!itemView.isClickable()) {
+            itemView.setClickable(true);
+        }
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BaseRecyclerAdapter.OnItemClickListener clickListener =
+                        adapter.getOnItemClickListener();
+                if (clickListener != null) {
+                    int position = getAdapterPosition();
+                    if (position == RecyclerView.NO_POSITION) {
+                        return;
+                    }
+                    clickListener.onItemClick(adapter, v, position);
+                }
+            }
+        });
+        return this;
+    }
 
     /**
      * set nestview id
@@ -459,6 +483,31 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
         return this;
     }
 
+    /**
+     * 设置条目本身的长按点击事件
+     */
+    public BaseRecyclerViewHolder addItemOnLongClickListener() {
+        itemChildLongClickViewIds.add(itemView.getId());
+        if (!itemView.isLongClickable()) {
+            itemView.setLongClickable(true);
+        }
+        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                BaseRecyclerAdapter.OnItemLongClickListener longClickListener =
+                        adapter.getOnItemLongClickListener();
+                if (longClickListener == null) {
+                    return false;
+                }
+                int position = getAdapterPosition();
+                if (position == RecyclerView.NO_POSITION) {
+                    return false;
+                }
+                return longClickListener.onItemLongClick(adapter, v, position);
+            }
+        });
+        return this;
+    }
 
     /**
      * Sets the on touch listener of the view.

@@ -6,6 +6,7 @@ import com.example.baserecycleradapter.R;
 import com.example.recyclerviewadapter.base.BaseRecyclerAdapter;
 import com.example.recyclerviewadapter.base.BaseRecyclerViewHolder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EasyListAdapter extends BaseRecyclerAdapter<String> {
