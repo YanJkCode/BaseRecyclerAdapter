@@ -1,4 +1,4 @@
-package com.example.recyclerviewadapter.base;
+package com.yanjkcode.recyclerviewadapter.base;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -29,7 +29,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
+@NotProguard
+public class ViewHolder extends RecyclerView.ViewHolder {
 
     /**
      * Views indexed with their IDs
@@ -46,6 +47,10 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
 
     private final LinkedHashSet<Integer> itemChildLongClickViewIds;
     private BaseRecyclerAdapter adapter;
+    /**
+     * 当前ViewHolder的type类型
+     */
+    private int type;
 
     /**
      * Package private field to retain the associated user object and detect a change
@@ -53,7 +58,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
     private Object associatedObject;
 
 
-    public BaseRecyclerViewHolder(View view) {
+    public ViewHolder(View view) {
         super(view);
         this.views = new SparseArray<>();
         this.childClickViewIds = new LinkedHashSet<>();
@@ -80,14 +85,14 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param value  The text to put in the text view.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setText(@IdRes int viewId, CharSequence value) {
+    public ViewHolder setText(@IdRes int viewId, CharSequence value) {
         TextView view = getView(viewId);
         if (view != null)
             view.setText(value);
         return this;
     }
 
-    public BaseRecyclerViewHolder setText(@IdRes int viewId, @StringRes int strId) {
+    public ViewHolder setText(@IdRes int viewId, @StringRes int strId) {
         TextView view = getView(viewId);
         if (view != null)
             view.setText(strId);
@@ -101,7 +106,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param imageResId The image resource id.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setImageResource(@IdRes int viewId, @DrawableRes int imageResId) {
+    public ViewHolder setImageResource(@IdRes int viewId, @DrawableRes int imageResId) {
         ImageView view = getView(viewId);
         if (view != null)
             view.setImageResource(imageResId);
@@ -115,7 +120,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param color  A color, not a resource id.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setBackgroundColor(@IdRes int viewId, @ColorInt int color) {
+    public ViewHolder setBackgroundColor(@IdRes int viewId, @ColorInt int color) {
         View view = getView(viewId);
         if (view != null)
             view.setBackgroundColor(color);
@@ -129,8 +134,8 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param backgroundRes A resource to use as a background.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setBackgroundRes(@IdRes int viewId,
-                                                   @DrawableRes int backgroundRes) {
+    public ViewHolder setBackgroundRes(@IdRes int viewId,
+                                       @DrawableRes int backgroundRes) {
         View view = getView(viewId);
         if (view != null)
             view.setBackgroundResource(backgroundRes);
@@ -144,7 +149,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param textColor The text color (not a resource id).
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setTextColor(@IdRes int viewId, @ColorInt int textColor) {
+    public ViewHolder setTextColor(@IdRes int viewId, @ColorInt int textColor) {
         TextView view = getView(viewId);
         if (view != null)
             view.setTextColor(textColor);
@@ -159,7 +164,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param drawable The image drawable.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setImageDrawable(@IdRes int viewId, Drawable drawable) {
+    public ViewHolder setImageDrawable(@IdRes int viewId, Drawable drawable) {
         ImageView view = getView(viewId);
         if (view != null)
             view.setImageDrawable(drawable);
@@ -169,7 +174,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
     /**
      * Add an action to set the image of an image view. Can be called multiple times.
      */
-    public BaseRecyclerViewHolder setImageBitmap(@IdRes int viewId, Bitmap bitmap) {
+    public ViewHolder setImageBitmap(@IdRes int viewId, Bitmap bitmap) {
         ImageView view = getView(viewId);
         if (view != null)
             view.setImageBitmap(bitmap);
@@ -180,7 +185,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * Add an action to set the alpha of a view. Can be called multiple times.
      * Alpha between 0-1.
      */
-    public BaseRecyclerViewHolder setAlpha(@IdRes int viewId, float value) {
+    public ViewHolder setAlpha(@IdRes int viewId, float value) {
         View view = getView(viewId);
         if (view != null)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -202,7 +207,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param visible True for VISIBLE, false for GONE.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setGone(@IdRes int viewId, boolean visible) {
+    public ViewHolder setGone(@IdRes int viewId, boolean visible) {
         View view = getView(viewId);
         if (view != null)
             view.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -216,7 +221,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param visible True for VISIBLE, false for INVISIBLE.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setVisible(@IdRes int viewId, boolean visible) {
+    public ViewHolder setVisible(@IdRes int viewId, boolean visible) {
         View view = getView(viewId);
         if (view != null)
             view.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
@@ -230,7 +235,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param visible True for VISIBLE, false for GONE.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setVisibleG(@IdRes int viewId, boolean visible) {
+    public ViewHolder setVisibleG(@IdRes int viewId, boolean visible) {
         View view = getView(viewId);
         if (view != null)
             view.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -243,7 +248,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param viewId The id of the TextView to linkify.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder linkify(@IdRes int viewId) {
+    public ViewHolder linkify(@IdRes int viewId) {
         TextView view = getView(viewId);
         if (view != null)
             Linkify.addLinks(view, Linkify.ALL);
@@ -253,7 +258,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
     /**
      * Apply the typeface to the given viewId, and enable subpixel rendering.
      */
-    public BaseRecyclerViewHolder setTypeface(@IdRes int viewId, Typeface typeface) {
+    public ViewHolder setTypeface(@IdRes int viewId, Typeface typeface) {
         TextView view = getView(viewId);
         if (view != null) {
             view.setTypeface(typeface);
@@ -265,7 +270,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
     /**
      * Apply the typeface to all the given viewIds, and enable subpixel rendering.
      */
-    public BaseRecyclerViewHolder setTypeface(Typeface typeface, int... viewIds) {
+    public ViewHolder setTypeface(Typeface typeface, int... viewIds) {
         for (int viewId : viewIds) {
             TextView view = getView(viewId);
             if (view != null) {
@@ -283,7 +288,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param progress The progress.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setProgress(@IdRes int viewId, int progress) {
+    public ViewHolder setProgress(@IdRes int viewId, int progress) {
         ProgressBar view = getView(viewId);
         if (view != null)
             view.setProgress(progress);
@@ -298,7 +303,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param max      The max value of a ProgressBar.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setProgress(@IdRes int viewId, int progress, int max) {
+    public ViewHolder setProgress(@IdRes int viewId, int progress, int max) {
         ProgressBar view = getView(viewId);
         if (view != null) {
             view.setMax(max);
@@ -314,7 +319,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param max    The max value of a ProgressBar.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setMax(@IdRes int viewId, int max) {
+    public ViewHolder setMax(@IdRes int viewId, int max) {
         ProgressBar view = getView(viewId);
         if (view != null)
             view.setMax(max);
@@ -328,7 +333,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param rating The rating.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setRating(@IdRes int viewId, float rating) {
+    public ViewHolder setRating(@IdRes int viewId, float rating) {
         RatingBar view = getView(viewId);
         if (view != null)
             view.setRating(rating);
@@ -343,7 +348,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param max    The range of the RatingBar to 0...max.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setRating(@IdRes int viewId, float rating, int max) {
+    public ViewHolder setRating(@IdRes int viewId, float rating, int max) {
         RatingBar view = getView(viewId);
         if (view != null) {
             view.setMax(max);
@@ -360,8 +365,8 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @return The BaseRecyclerViewHolder for chaining.
      */
     @Deprecated
-    public BaseRecyclerViewHolder setOnClickListener(@IdRes int viewId,
-                                                     View.OnClickListener listener) {
+    public ViewHolder setOnClickListener(@IdRes int viewId,
+                                         View.OnClickListener listener) {
         View view = getView(viewId);
         if (view != null)
             view.setOnClickListener(listener);
@@ -378,7 +383,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * or if you can use  recyclerView.addOnItemTouch(listerer)  wo also support this menthod
      */
     @SuppressWarnings("unchecked")
-    public BaseRecyclerViewHolder addOnClickListener(@IdRes final int... viewIds) {
+    public ViewHolder addOnClickListener(@IdRes final int... viewIds) {
         for (int viewId : viewIds) {
             childClickViewIds.add(viewId);
             final View view = getView(viewId);
@@ -396,7 +401,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
                             if (position == RecyclerView.NO_POSITION) {
                                 return;
                             }
-                            clickListener.onItemClick(adapter, v, position);
+                            clickListener.onItemClick(adapter, ViewHolder.this, v, position);
                         }
                     }
                 });
@@ -408,7 +413,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
     /**
      * 设置条目本身的点击事件
      */
-    public BaseRecyclerViewHolder addItemOnClickListener() {
+    public ViewHolder addItemOnClickListener() {
         childClickViewIds.add(itemView.getId());
         if (!itemView.isClickable()) {
             itemView.setClickable(true);
@@ -423,7 +428,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
                     if (position == RecyclerView.NO_POSITION) {
                         return;
                     }
-                    clickListener.onItemClick(adapter, v, position);
+                    clickListener.onItemClick(adapter, ViewHolder.this, v, position);
                 }
             }
         });
@@ -436,7 +441,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param viewIds add the child views id   can support childview click
      * @return
      */
-    public BaseRecyclerViewHolder setNestView(@IdRes int... viewIds) {
+    public ViewHolder setNestView(@IdRes int... viewIds) {
         for (int viewId : viewIds) {
             nestViews.add(viewId);
         }
@@ -455,7 +460,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * or if you can use  recyclerView.addOnItemTouch(listerer)  wo also support this menthod
      */
     @SuppressWarnings("unchecked")
-    public BaseRecyclerViewHolder addOnLongClickListener(@IdRes final int... viewIds) {
+    public ViewHolder addOnLongClickListener(@IdRes final int... viewIds) {
         for (int viewId : viewIds) {
             itemChildLongClickViewIds.add(viewId);
             final View view = getView(viewId);
@@ -475,7 +480,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
                         if (position == RecyclerView.NO_POSITION) {
                             return false;
                         }
-                        return longClickListener.onItemLongClick(adapter, v, position);
+                        return longClickListener.onItemLongClick(adapter, ViewHolder.this, v, position);
                     }
                 });
             }
@@ -486,7 +491,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
     /**
      * 设置条目本身的长按点击事件
      */
-    public BaseRecyclerViewHolder addItemOnLongClickListener() {
+    public ViewHolder addItemOnLongClickListener() {
         itemChildLongClickViewIds.add(itemView.getId());
         if (!itemView.isLongClickable()) {
             itemView.setLongClickable(true);
@@ -503,7 +508,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
                 if (position == RecyclerView.NO_POSITION) {
                     return false;
                 }
-                return longClickListener.onItemLongClick(adapter, v, position);
+                return longClickListener.onItemLongClick(adapter, ViewHolder.this, v, position);
             }
         });
         return this;
@@ -517,8 +522,8 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @return The BaseRecyclerViewHolder for chaining.
      */
     @Deprecated
-    public BaseRecyclerViewHolder setOnTouchListener(@IdRes int viewId,
-                                                     View.OnTouchListener listener) {
+    public ViewHolder setOnTouchListener(@IdRes int viewId,
+                                         View.OnTouchListener listener) {
         View view = getView(viewId);
         if (view != null)
             view.setOnTouchListener(listener);
@@ -535,8 +540,8 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * (listener))}
      */
     @Deprecated
-    public BaseRecyclerViewHolder setOnLongClickListener(@IdRes int viewId,
-                                                         View.OnLongClickListener listener) {
+    public ViewHolder setOnLongClickListener(@IdRes int viewId,
+                                             View.OnLongClickListener listener) {
         View view = getView(viewId);
         if (view != null)
             view.setOnLongClickListener(listener);
@@ -553,8 +558,8 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * (listener))}
      */
     @Deprecated
-    public BaseRecyclerViewHolder setOnItemClickListener(@IdRes int viewId,
-                                                         AdapterView.OnItemClickListener listener) {
+    public ViewHolder setOnItemClickListener(@IdRes int viewId,
+                                             AdapterView.OnItemClickListener listener) {
         AdapterView view = getView(viewId);
         if (view != null)
             view.setOnItemClickListener(listener);
@@ -568,8 +573,8 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param listener The item long click listener;
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setOnItemLongClickListener(@IdRes int viewId,
-                                                             AdapterView.OnItemLongClickListener listener) {
+    public ViewHolder setOnItemLongClickListener(@IdRes int viewId,
+                                                 AdapterView.OnItemLongClickListener listener) {
         AdapterView view = getView(viewId);
         if (view != null)
             view.setOnItemLongClickListener(listener);
@@ -583,8 +588,8 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param listener The item selected click listener;
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setOnItemSelectedClickListener(@IdRes int viewId,
-                                                                 AdapterView.OnItemSelectedListener listener) {
+    public ViewHolder setOnItemSelectedClickListener(@IdRes int viewId,
+                                                     AdapterView.OnItemSelectedListener listener) {
         AdapterView view = getView(viewId);
         if (view != null)
             view.setOnItemSelectedListener(listener);
@@ -598,8 +603,8 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param listener The checked change listener of compound button.
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setOnCheckedChangeListener(@IdRes int viewId,
-                                                             CompoundButton.OnCheckedChangeListener listener) {
+    public ViewHolder setOnCheckedChangeListener(@IdRes int viewId,
+                                                 CompoundButton.OnCheckedChangeListener listener) {
         CompoundButton view = getView(viewId);
         if (view != null)
             view.setOnCheckedChangeListener(listener);
@@ -613,7 +618,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param tag    The tag;
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setTag(@IdRes int viewId, Object tag) {
+    public ViewHolder setTag(@IdRes int viewId, Object tag) {
         View view = getView(viewId);
         if (view != null)
             view.setTag(tag);
@@ -628,7 +633,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param tag    The tag;
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setTag(@IdRes int viewId, int key, Object tag) {
+    public ViewHolder setTag(@IdRes int viewId, int key, Object tag) {
         View view = getView(viewId);
         if (view != null)
             view.setTag(key, tag);
@@ -642,7 +647,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param checked The checked status;
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setChecked(@IdRes int viewId, boolean checked) {
+    public ViewHolder setChecked(@IdRes int viewId, boolean checked) {
         View view = getView(viewId);
         if (view != null)
             // View unable cast to Checkable
@@ -659,7 +664,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param enable The checked status;
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    public BaseRecyclerViewHolder setEnabled(@IdRes int viewId, boolean enable) {
+    public ViewHolder setEnabled(@IdRes int viewId, boolean enable) {
         View view = getView(viewId);
         if (view != null)
             view.setEnabled(enable);
@@ -674,7 +679,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @return The BaseRecyclerViewHolder for chaining.
      */
     @SuppressWarnings("unchecked")
-    public BaseRecyclerViewHolder setAdapter(@IdRes int viewId, Adapter adapter) {
+    public ViewHolder setAdapter(@IdRes int viewId, Adapter adapter) {
         AdapterView view = getView(viewId);
         if (view != null)
             view.setAdapter(adapter);
@@ -687,7 +692,7 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
      * @param adapter The adapter;
      * @return The BaseRecyclerViewHolder for chaining.
      */
-    protected BaseRecyclerViewHolder setAdapter(BaseRecyclerAdapter adapter) {
+    protected ViewHolder setAdapter(BaseRecyclerAdapter adapter) {
         this.adapter = adapter;
         return this;
     }
@@ -701,6 +706,14 @@ public class BaseRecyclerViewHolder extends RecyclerView.ViewHolder {
                 views.put(viewId, view);
         }
         return (T) view;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public int getType() {
+        return type;
     }
 
     /**

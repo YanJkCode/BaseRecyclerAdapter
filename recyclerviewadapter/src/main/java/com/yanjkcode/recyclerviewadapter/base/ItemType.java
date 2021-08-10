@@ -1,6 +1,7 @@
-package com.example.recyclerviewadapter.base;
+package com.yanjkcode.recyclerviewadapter.base;
 
-public interface BaseItemType{
+@NotProguard
+public interface ItemType {
     /**
      * 用于判断当前条目的类型获取对应的布局
      *
