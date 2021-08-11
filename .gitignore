@@ -1,3 +1,5 @@
+*.iml
+.idea/
 .gradle
 **/target/
 **/.settings/
@@ -11,9 +13,9 @@
 .recommenders/
 **/.springBeans
 **/.factorypath
-.idea/
-*.iml
 /bin/
 **/bin/
 **/.mvn/
 .gitignore
+/local.properties
+.local.properties
