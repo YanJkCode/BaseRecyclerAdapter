@@ -7,54 +7,53 @@
     tools:context=".MainActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rec"
+        android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottom03"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textnum"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/bottom01"
-        app:layout_constraintEnd_toStartOf="@+id/bottom01"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/bottom01"
-        tools:text="123" />
-
-    <Button
-        android:id="@+id/bottom01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="添加数据"
-        app:layout_constraintEnd_toStartOf="@+id/bottom02"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textnum"
-        app:layout_constraintTop_toTopOf="@+id/bottom02" />
-
-    <Button
-        android:id="@+id/bottom02"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="重置数据"
-        app:layout_constraintEnd_toStartOf="@+id/bottom03"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/bottom01"
-        app:layout_constraintTop_toTopOf="@+id/bottom03" />
-
-    <Button
-        android:id="@+id/bottom03"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="清空数据"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/bottom02" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/tv_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:textSize="16sp"
+            tools:text="0" />
+
+        <Button
+            android:id="@+id/add_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="添加数据" />
+
+        <Button
+            android:id="@+id/re_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="重置数据" />
+
+        <Button
+            android:id="@+id/clear_data"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="清空数据" />
+    </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

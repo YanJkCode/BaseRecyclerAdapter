@@ -394,7 +394,7 @@ public class ViewHolder extends RecyclerView.ViewHolder {
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        BaseRecyclerAdapter.OnItemClickListener clickListener =
+                        OnItemClickListener clickListener =
                                 adapter.getOnItemClickListener();
                         if (clickListener != null) {
                             int position = getAdapterPosition();
@@ -421,7 +421,7 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BaseRecyclerAdapter.OnItemClickListener clickListener =
+                OnItemClickListener clickListener =
                         adapter.getOnItemClickListener();
                 if (clickListener != null) {
                     int position = getAdapterPosition();
@@ -471,7 +471,7 @@ public class ViewHolder extends RecyclerView.ViewHolder {
                 view.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        BaseRecyclerAdapter.OnItemLongClickListener longClickListener =
+                        OnItemLongClickListener longClickListener =
                                 adapter.getOnItemLongClickListener();
                         if (longClickListener == null) {
                             return false;
@@ -499,8 +499,7 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                BaseRecyclerAdapter.OnItemLongClickListener longClickListener =
-                        adapter.getOnItemLongClickListener();
+                OnItemLongClickListener longClickListener = adapter.getOnItemLongClickListener();
                 if (longClickListener == null) {
                     return false;
                 }

@@ -1,13 +1,13 @@
 package com.yanjkcode.recyclerviewadapter.base;
 
 @NotProguard
-public interface NoDataListener {
+public interface OnEmptyListener {
     /**
      * 没有数据时的布局
      *
      * @return 布局ID
      */
-    int getNoDataLayoutId();
+    int getEmptyLayoutId();
 
     /**
      * 没有数据时显示的数据
@@ -16,5 +16,5 @@ public interface NoDataListener {
      * @param noDataBackground 图片ID
      * @param noDataText       文本
      */
-    void setNoDataLayout(ViewHolder holder, int noDataBackground, String noDataText);
+    void setEmptyView(ViewHolder holder, int noDataBackground, String noDataText);
 }

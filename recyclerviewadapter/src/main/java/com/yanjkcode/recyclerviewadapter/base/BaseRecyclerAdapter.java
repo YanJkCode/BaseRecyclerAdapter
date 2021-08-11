@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.yanjkcode.recyclerviewadapter.R;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,21 +24,21 @@ import java.util.List;
  */
 @NotProguard
 public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
-    private static NoDataListener sNoDataListener;//全局 没有数据监听
+    private static OnEmptyListener sOnEmptyListener;//全局 没有数据监听
 
-    private final HashMap<Integer, Integer> mItemViewDatas = new HashMap<>();//布局Id与布局Type
+    private final HashMap<Integer, Integer> mItemViewData = new HashMap<>();//布局Id与布局Type
     private LayoutInflater mLayoutInflater;//布局载入器
     private final List<T> mData = new ArrayList<>();//数据源
 
-    private boolean isAddNoDataLayout;//是否已经更改了布局管理器
-    private int noDataBackground;//没有数据的背景
-    private String noDataText;//没有数据的背景文字
-    private RecyclerView.LayoutManager noDataLayoutManager;//没有数据时的布局管理器 防止其他类型的管理器导致页面效果不正确
-    private NoDataListener mNoDataListener;//当前 没有数据监听
+    private boolean isAddEmptyLayout;//是否已经更改了布局管理器
+    private int emptyBackground;//没有数据的背景
+    private String emptyText;//没有数据的背景文字
+    private RecyclerView.LayoutManager emptyLayoutManager;//没有数据时的布局管理器 防止其他类型的管理器导致页面效果不正确
+    private OnEmptyListener mOnEmptyListener;//当前 没有数据监听
 
     private RecyclerView curBindRecyclerView;//当前绑定的列表
     private RecyclerView.LayoutManager layoutManager;//当前的管理器
-    private static final int TYPE_NO_DATA = 0x3d821;//没有数据时的布局类型
+    private static final int TYPE_EMPTY = 0x3d821;//没有数据时的布局类型
 
     /**
      * 绑定视图时
@@ -51,6 +49,13 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
     public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
         curBindRecyclerView = recyclerView;
+        if (mLayoutInflater == null) {
+            mLayoutInflater = LayoutInflater.from(curBindRecyclerView.getContext());//创建布局填充器 如果已经有了则不会创建
+        }
+        RecyclerView.ItemAnimator itemAnimator = curBindRecyclerView.getItemAnimator();
+        if (itemAnimator != null) {
+            itemAnimator.setChangeDuration(0);//防止刷新数据时闪屏
+        }
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -75,35 +80,41 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
         if (curBindRecyclerView != null && curBindRecyclerView == recyclerView) {
             curBindRecyclerView = null;
         }
+        if (mLayoutInflater != null) {
+            mLayoutInflater = null;
+        }
+        if (mData.size() > 0) {
+            mData.clear();
+        }
     }
 
     /**
      * 设置没有数据时的背景
      *
-     * @param noDataBackground 资源ID
+     * @param emptyBackground 资源ID
      */
-    public final void setNoDataBackground(@DrawableRes int noDataBackground) {
-        setNoDataBackground(noDataBackground, null);
+    public final void setEmptyBackground(@DrawableRes int emptyBackground) {
+        setEmptyBackground(emptyBackground, null);
     }
 
     /**
-     * 设置没有数据时的背景 
+     * 设置没有数据时的背景
      *
-     * @param noDataBackground 资源ID
-     * @param noDataText       文本
+     * @param emptyBackground 资源ID
+     * @param emptyText       文本
      */
-    public final void setNoDataBackground(@DrawableRes int noDataBackground, String noDataText) {
-        this.noDataBackground = noDataBackground;
-        this.noDataText = noDataText;
-        int noDataLayoutId = 0;
-        if (mNoDataListener != null) {
-            noDataLayoutId = mNoDataListener.getNoDataLayoutId();
+    public final void setEmptyBackground(@DrawableRes int emptyBackground, String emptyText) {
+        this.emptyBackground = emptyBackground;
+        this.emptyText = emptyText;
+        int emptyLayoutId = 0;
+        if (mOnEmptyListener != null) {
+            emptyLayoutId = mOnEmptyListener.getEmptyLayoutId();
         }
-        if (noDataLayoutId == 0 && sNoDataListener != null) {
-            noDataLayoutId = sNoDataListener.getNoDataLayoutId();
+        if (emptyLayoutId == 0 && sOnEmptyListener != null) {
+            emptyLayoutId = sOnEmptyListener.getEmptyLayoutId();
         }
-        if (noDataLayoutId != 0 && !mItemViewDatas.containsKey(TYPE_NO_DATA)) {
-            mItemViewDatas.put(TYPE_NO_DATA, noDataLayoutId);
+        if (emptyLayoutId != 0 && !mItemViewData.containsKey(TYPE_EMPTY)) {
+            mItemViewData.put(TYPE_EMPTY, emptyLayoutId);
             notifyDataSetChanged();
         }
     }
@@ -146,7 +157,6 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
         }
         addLayout(layoutId, 0);
     }
-
 
     /**
      * 多布局
@@ -192,17 +202,17 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
         if (size > 0 && size > position) {
             return mData.get(position);
         }
-        return null;
+        throw new IndexOutOfBoundsException(String.format("下标不正确 当前数据量:%d  传入的下标值:%d", size, position));
     }
 
     /**
      * 载入多个布局 使用重复的layoutType会被覆盖
      *
-     * @param itemViewDatas 布局id和Type
+     * @param itemViewData 布局id和Type
      */
-    public final void addLayouts(@NonNull List<ItemLayoutType> itemViewDatas) {
-        for (ItemLayoutType itemViewData : itemViewDatas) {
-            mItemViewDatas.put(itemViewData.getLayoutType(), itemViewData.getLayoutID());
+    protected final void addLayouts(@NonNull List<ItemLayoutType> itemViewData) {
+        for (ItemLayoutType itemLayoutType : itemViewData) {
+            mItemViewData.put(itemLayoutType.getLayoutType(), itemLayoutType.getLayoutID());
         }
         notifyDataSetChanged();
     }
@@ -210,14 +220,14 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
     /**
      * 载入多个布局 使用重复的layoutType会被覆盖
      *
-     * @param itemViewDatas 布局id和Type
+     * @param itemViewData 布局id和Type
      */
-    public final void addLayouts(ItemLayoutType... itemViewDatas) {
-        if (itemViewDatas == null) {
+    protected final void addLayouts(ItemLayoutType... itemViewData) {
+        if (itemViewData == null) {
             return;
         }
-        for (ItemLayoutType itemViewData : itemViewDatas) {
-            mItemViewDatas.put(itemViewData.getLayoutType(), itemViewData.getLayoutID());
+        for (ItemLayoutType itemLayoutType : itemViewData) {
+            mItemViewData.put(itemLayoutType.getLayoutType(), itemLayoutType.getLayoutID());
         }
         notifyDataSetChanged();
     }
@@ -228,8 +238,8 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
      * @param layoutId   布局Id
      * @param layoutType 使用重复的layoutType会被覆盖
      */
-    public final void addLayout(@LayoutRes int layoutId, int layoutType) {
-        mItemViewDatas.put(layoutType, layoutId);
+    protected final void addLayout(@LayoutRes int layoutId, int layoutType) {
+        mItemViewData.put(layoutType, layoutId);
         notifyDataSetChanged();
     }
 
@@ -399,14 +409,11 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
     @NonNull
     @Override
     public final ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (mLayoutInflater == null) {
-            mLayoutInflater = LayoutInflater.from(parent.getContext());//创建布局填充器 如果已经有了则不会创建
-        }
         ViewHolder vh = null;
-        if (mItemViewDatas.size() > 0) {
+        if (mItemViewData.size() > 0) {
             Integer layoutId;
             try {
-                layoutId = mItemViewDatas.get(viewType);//用viewType获取一个布局
+                layoutId = mItemViewData.get(viewType);//用viewType获取一个布局
             } catch (Exception e) {
                 throw new NullPointerException("Error:获取布局ID失败 请检查布局ID与TYPE是否对应");
             }
@@ -434,12 +441,12 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
      */
     @Override
     public final void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (noDataBackground > 0 && position == 0 && mData.size() == 0) {//没有数据时加载
-            if (mNoDataListener != null) {//优先使用当前类的加载回调
-                mNoDataListener.setNoDataLayout(holder, noDataBackground, noDataText);
+        if (emptyBackground > 0 && position == 0 && mData.size() == 0) {//没有数据时加载
+            if (mOnEmptyListener != null) {//优先使用当前类的加载回调
+                mOnEmptyListener.setEmptyView(holder, emptyBackground, emptyText);
             } else {
-                if (sNoDataListener != null) {//使用全局加载回调
-                    sNoDataListener.setNoDataLayout(holder, noDataBackground, noDataText);
+                if (sOnEmptyListener != null) {//使用全局加载回调
+                    sOnEmptyListener.setEmptyView(holder, emptyBackground, emptyText);
                 }
             }
         } else {
@@ -475,20 +482,20 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
     public final int getItemViewType(int position) {
         int size = mData.size();
         if (position == 0 &&
-                noDataBackground > 0 &&
+                emptyBackground > 0 &&
                 mData.size() == 0 &&
-                mItemViewDatas.containsKey(TYPE_NO_DATA) &&
-                (mNoDataListener != null || sNoDataListener != null)) {
-            return TYPE_NO_DATA;
+                mItemViewData.containsKey(TYPE_EMPTY) &&
+                (mOnEmptyListener != null || sOnEmptyListener != null)) {
+            return TYPE_EMPTY;
         } else {
             if (size > position) {
                 T t = mData.get(position);//获取当前下标的数据
-                if (t instanceof ItemType) {//判断数据是否存在,并且是否是继承与BaseItemType类
-                    return ((ItemType) t).getItemType(position);//BaseItemType实现了获取条目状态接口
+                if (t instanceof ItemType) {//判断数据是否是继承与ItemType类
+                    return ((ItemType) t).getItemType(position);//ItemType实现了获取条目类型接口
                 }
             }
         }
-        return 0;//如果不是这个类型默认返回0 防止 不继承BaseItemType类的类出现
+        return 0;//如果不继承ItemType 默认返回0类型
     }
 
     /**
@@ -498,32 +505,39 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
     public final int getItemCount() {
         int size;
         //判断当前是否有数据和布局
-        if (mData.size() > 0 && mItemViewDatas.size() > 0) {
-            if (isAddNoDataLayout) {
+        if (mData.size() > 0 && mItemViewData.size() > 0) {
+            if (isAddEmptyLayout) {
                 curBindRecyclerView.setLayoutManager(layoutManager);
-                isAddNoDataLayout = false;
+                isAddEmptyLayout = false;
             }
             size = mData.size();
         } else {
-            if (noDataBackground > 0 &&
+            if (emptyBackground > 0 &&
                     mData.size() == 0 &&
-                    mItemViewDatas.containsKey(TYPE_NO_DATA) &&
-                    (mNoDataListener != null || sNoDataListener != null)) {//空数据时是否有数据
-
+                    mItemViewData.containsKey(TYPE_EMPTY) &&
+                    (mOnEmptyListener != null || sOnEmptyListener != null)) {//空数据时是否有数据
                 if (layoutManager == null) {
                     layoutManager = curBindRecyclerView.getLayoutManager();
                 }
-                if (noDataLayoutManager == null) {
-                    noDataLayoutManager = new LinearLayoutManager(curBindRecyclerView.getContext());
+                if (emptyLayoutManager == null) {
+                    emptyLayoutManager = new LinearLayoutManager(curBindRecyclerView.getContext());
                 }
-                curBindRecyclerView.setLayoutManager(noDataLayoutManager);
-                isAddNoDataLayout = true;
+                curBindRecyclerView.setLayoutManager(emptyLayoutManager);
+                isAddEmptyLayout = true;
                 size = 1;
             } else {
                 size = 0;
             }
         }
         return size;
+    }
+
+    /**
+     * 给每个数据一个默认的id
+     */
+    @Override
+    public long getItemId(int position) {
+        return position;
     }
 
     /**
@@ -546,14 +560,6 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
     }
 
     /**
-     * 条目点击回调接口
-     */
-    @NotProguard
-    public interface OnItemClickListener<T> {
-        void onItemClick(BaseRecyclerAdapter<T> adapter, ViewHolder holder, View view, int position);
-    }
-
-    /**
      * 长按点击事件接口
      */
     private OnItemLongClickListener<T> mOnItemLongClickListener;
@@ -567,11 +573,6 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
         mOnItemLongClickListener = onItemLongClickListener;
     }
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
     /**
      * 获取长按点击事件的接口
      */
@@ -580,25 +581,17 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
     }
 
     /**
-     * 长按点击事件的接口
-     */
-    @NotProguard
-    public interface OnItemLongClickListener<T> {
-        boolean onItemLongClick(BaseRecyclerAdapter<T> adapter, ViewHolder holder, View view, int position);
-    }
-
-    /**
      * 设置全局 优先度低 没有数据时回调
      */
-    public static void initNoDataListener(NoDataListener noDataListener) {
-        sNoDataListener = noDataListener;
+    public static void initOnEmptyListener(OnEmptyListener onEmptyListener) {
+        sOnEmptyListener = onEmptyListener;
     }
 
     /**
      * 设置当前 优先度高 没有数据时回调
      */
-    protected final void setNoDataListener(NoDataListener noDataListener) {
-        mNoDataListener = noDataListener;
+    protected final void setOnEmptyListener(OnEmptyListener onEmptyListener) {
+        mOnEmptyListener = onEmptyListener;
     }
 }
 
