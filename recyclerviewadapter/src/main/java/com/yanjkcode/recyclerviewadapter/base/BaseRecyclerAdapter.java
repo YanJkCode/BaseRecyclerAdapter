@@ -87,7 +87,7 @@ public abstract class BaseRecyclerAdapter<T> extends RecyclerView.Adapter<ViewHo
     }
 
     /**
-     * 设置没有数据时的背景
+     * 设置没有数据时的背景 
      *
      * @param noDataBackground 资源ID
      * @param noDataText       文本
