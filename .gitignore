@@ -18,4 +18,3 @@
 **/.mvn/
 .gitignore
 /local.properties
-.local.properties
